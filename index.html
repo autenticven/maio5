@@ -87,7 +87,7 @@
         const pads = [];
 
         // Criar 8 blocos de assinatura
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 5; i++) {
             const div = document.createElement('div');
             div.className = 'campo-assinatura';
             div.innerHTML = `
@@ -131,6 +131,6 @@
             html2pdf().set(opt).from(elemento).save();
         }
     </script>
-    <img src="camaramaio.jpg" alt="camaramaio" style="display: block; margin: 20px auto; max-width: 60%; height: 60%;">
+    
 </body>
 </html>
