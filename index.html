@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulário de Assinaturas A4</title>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { background: #f0f0f0; font-family: Arial, sans-serif; }
+        
+        /* Simulação da folha A4 */
+        #folha-a4 {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10px auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        h2 { text-align: center; color: #333; }
+
+        .campo-assinatura {
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        .info { flex: 1; }
+        
+        input {
+            border: none;
+            border-bottom: 1px solid #eee;
+            width: 90%;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .canvas-container {
+            border: 1px dashed #aaa;
+            background: #fafafa;
+            width: 300px;
+            height: 80px;
+        }
+
+        canvas { width: 100%; height: 100%; touch-action: none; }
+
+        .controles {
+            text-align: center;
+            margin: 20px 0;
+            position: sticky;
+            top: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        
+        .btn-limpar { background: #e74c3c; margin-left: 5px; font-size: 10px; padding: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="controles">
+        <button onclick="gerarPDF()">Salvar em PDF (A4)</button>
+    </div>
+
+    <div id="folha-a4">
+        <h2>DSS: Acesso a câmara resfriada. Téc. Seguranca do Trabalho: Marcelo Picanço</h2>
+        <p style="text-align: left;">Data: <input type="text" style="width: 100px;" value="04/05/2026"></p>
+        
+        <div id="lista-campos">
+            <!-- Os 8 campos serão gerados aqui -->
+        </div>
+    </div>
+
+    <script>
+        const lista = document.getElementById('lista-campos');
+        const pads = [];
+
+        // Criar 8 blocos de assinatura
+        for (let i = 1; i <= 6; i++) {
+            const div = document.createElement('div');
+            div.className = 'campo-assinatura';
+            div.innerHTML = `
+                <div class="info">
+                    <label>${i}. Nome:</label><br>
+                    <input type="text" placeholder="Nome. Função. N° Loja">
+                </div>
+                <div class="canvas-wrap">
+                    <div class="canvas-container">
+                        <canvas id="pad-${i}"></canvas>
+                    </div>
+                    <button class="btn-limpar" onclick="limparPad(${i-1})">Limpar Assinatura</button>
+                </div>
+            `;
+            lista.appendChild(div);
+        }
+
+        // Inicializar os campos de assinatura
+        window.onload = () => {
+            const canvases = document.querySelectorAll('canvas');
+            canvases.forEach(canvas => {
+                const pad = new SignaturePad(canvas);
+                pads.push(pad);
+            });
+        };
+
+        function limparPad(index) {
+            pads[index].clear();
+        }
+
+        function gerarPDF() {
+            const elemento = document.getElementById('folha-a4');
+            const opt = {
+                margin: 0,
+                filename: 'assinaturas.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(elemento).save();
+        }
+    </script>
+    <img src="camaramaio.jpg" alt="camaramaio" style="display: block; margin: 20px auto; max-width: 60%; height: 60%;">
+</body>
+</html>
